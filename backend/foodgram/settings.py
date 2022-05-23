@@ -14,6 +14,7 @@ ALLOWED_HOSTS = [
     '127.0.0.1', 
     'localhost',
     'foodgram-python.ddns.net',
+    '*',
 ]
 
 
