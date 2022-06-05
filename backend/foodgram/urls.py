@@ -41,7 +41,7 @@ urlpatterns += [re_path('api/', include([
 ]))]
 
 if settings.DEBUG:
-    # Для дев режима с контейнерами
+    
     urlpatterns += static(
         settings.MEDIA_URL,
         document_root=settings.MEDIA_ROOT

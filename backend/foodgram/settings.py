@@ -134,25 +134,19 @@ REST_FRAMEWORK = {
 }
 
 DJOSER = {
-    # 'PASSWORD_RESET_CONFIRM_URL': '#/password/reset/confirm/{uid}/{token}',
-    # 'USERNAME_RESET_CONFIRM_URL': '#/username/reset/confirm/{uid}/{token}',
-    # 'ACTIVATION_URL': '#/activate/{uid}/{token}',
+    
     'LOGIN_FIELD': 'email',
     'SEND_ACTIVATION_EMAIL': False,
-    # 'SERIALIZERS': {
-    #      'user_create': 'users.serializers.UserRegistrationSerializer'
-    # }
+    
 }
 
 GLOBAL_SETTINGS = {
     "OUR_EMAIL": "from@example.com",
     "ROLE": (
-        # то как в БД / То, как видят при выборе
-        # ("moderator", "Модератор"),
+        
         ("user", "Юзер"),
         ("admin", "Админ"),
     ),
-    "admin": "admin",
-    # "moderator": "moderator",
+    "admin": "admin",    
     "user": "user",
 }

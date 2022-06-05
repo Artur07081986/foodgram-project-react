@@ -9,13 +9,7 @@ from .models import Follow
 
 User = get_user_model()
 
-# Пришлось сделать это отдельным файлом, потому что я тут
-# импортирую FavoritORInShopingCartRecipeSerializer,
-# а в recipes.serializers импортируется UsersListSerialiser
-# из serializers_user (бывшего serializers) и был циклический импорт...
-# ImportError: cannot import name 'FavoritORInShopingCartRecipeSerializer'
-#  from partially initialized module 'recipes.serializers'
-# (most likely due to a circular import)
+
 
 
 class FollowerSerializer(serializers.ModelSerializer):

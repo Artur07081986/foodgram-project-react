@@ -5,35 +5,18 @@ from xhtml2pdf import pisa
 from django.http import HttpResponse
 from django.template.loader import get_template
 
-# !!!!!!!!!!!!
-# НЕ используется, но мб в итоге допилю...
-# !!!!!!!!!!!!
 
-
-# Все перепробовал уже...
-# Не получается отрендерить мне пдф норм...
-# Вместо Кириллицы там квадратики черные
 def render_pdf_view(context):
-    template_path = 'to_pdf.html'
-    # context = {'myvar': 'this is your template context'}
-    # Create a Django response object, and specify content_type as pdf
-    response = HttpResponse(content_type='application/pdf')
-    # If download:
-    # response['Content-Disposition'] = 'attachment; filename="report.pdf"'
-    # If display:
-    response['Content-Disposition'] = 'filename="report.pdf"'
-    # find the template and render it.
+    template_path = 'to_pdf.html'    
+    response = HttpResponse(content_type='application/pdf')    
+    response['Content-Disposition'] = 'filename="report.pdf"'    
     template = get_template(template_path)
-    html = template.render(context)
-    # create a pdf
+    html = template.render(context)    
     pisa_status = pisa.CreatePDF(
         html.encode('utf-8'), dest=response,
-        encoding='utf-8')
-    # ,link_callback=link_callback)
-    # if error then show some funy view
+        encoding='utf-8')    
     if pisa_status.err:
-        return HttpResponse('We had some errors <pre>' + html + '</pre>')
-    # return render(request, template_path, context)
+        return HttpResponse('We had some errors <pre>' + html + '</pre>')    
     return response
 
 

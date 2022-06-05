@@ -11,7 +11,7 @@ from .models import Follow
 User = get_user_model()
 
 
-# https://answacode.com/questions/15456964/smena-parolya-v-django-admin
+
 class UserCreationForm(forms.ModelForm):
     password1 = forms.CharField(label='Password', widget=forms.PasswordInput)
     password2 = forms.CharField(
@@ -37,42 +37,21 @@ class UserCreationForm(forms.ModelForm):
         return user
 
 
-# class UserChangeForm(DjangoUserAdmin):
-# Сделал в итоге так, тогда можно из админки перейти в форму смены пасса юзера,
-# без каких либо кодов подтверждения
+
 class UserChangeForm(forms.ModelForm):
-    # Это что бы пасс был только на чтение
-    # password = ReadOnlyPasswordHashField()
+    
 
     class Meta:
         model = User
         fields = ('email', 'password', 'username', 'first_name',
                   'last_name', 'is_active', 'role', 'is_staff')
 
-    # Это я пытаюсь тут сделать смену паса из админки...
-    # По тз - админ - изменять пароль любого пользователя,
-    # У меня в менеджере для юзера создание обоих юзеров идет через сетпасс ->
-    # пасс хранится хешированным и я не могу просто в админке изменить
-    # значение поля...
-    # И плюс я не понимаю, где настроить поле, по которому админка будет
-    # определять кого пускать, что бы пускало, например по
-    # is_superuser or role = 'admin' or is_staff
-
-    # def clean_password(self):
-    #     return self.initial['password']
-
-    # def save(self, commit=True):
-    #     user = super().save(commit=False)
-    #     print(user)
-    #     user.set_password(self.cleaned_data['password'])
-    #     if commit:
-    #         user.save()
-    #     return user
+    
 
 
 @admin.register(User)
 class UserAdmin(DjangoUserAdmin):
-    # form = UserChangeForm
+    
     add_form = UserCreationForm
 
     list_display = (

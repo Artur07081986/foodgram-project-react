@@ -6,18 +6,11 @@ from .models import Recipe
 
 
 class AddOrDeleteRecipeFromFavOrShoppingModelMixin:
-    """
-        Мда, название мб и плохое... Но это миксин для
-        добавления/удаления
-        рецепта в избранное/шопинг кард, например
-    """
+    
     def adding_recipe_to_model_with_serializer(
         self, request, recipe_id, root_serializer, *args, **kwargs
     ):
-        '''
-            Мда, название мб и плохое... Но это метод для добавления
-            рецепта в избранное/шопинг кард, например
-        '''
+        
         user = request.user
         recipe = get_object_or_404(Recipe, id=recipe_id)
 
@@ -37,10 +30,7 @@ class AddOrDeleteRecipeFromFavOrShoppingModelMixin:
     def delete_recipe_from_model(
         self, request, recipe_id, model, *args, **kwargs
     ):
-        '''
-            Мда, название мб и плохое... Но это метод для удаления
-            рецепта в избранное/шопинг кард, например
-        '''
+        
         user = request.user
         recipe = get_object_or_404(Recipe, id=recipe_id)
         instance = get_object_or_404(

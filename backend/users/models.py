@@ -10,9 +10,7 @@ from .validators import (NotDeletedUsernameValidator, NotMeUsernameValidator,
                          UsernameValidator)
 
 
-# Пример по созданию кастомной модели юзера
-# https://webdevblog.ru/
-# sovremennyj-sposob-sozdanie-polzovatelskoj-modeli-user-v-django/
+
 class User(AbstractUser):
 
     username = models.CharField(
@@ -25,7 +23,7 @@ class User(AbstractUser):
             "алфавита [a-z A-Z], цифр [0-9] и спецсимволов: [ @ + - ]"
         ),
         validators=[
-            # UnicodeUsernameValidator(),
+            
             NotMeUsernameValidator(),
             UsernameValidator(),
             NotDeletedUsernameValidator()
@@ -101,14 +99,7 @@ class User(AbstractUser):
             purchase.recipe.name for purchase in purchases.all()
         ]
 
-        # Возвращается список покупок
-        # Каждый пункт покупки в виде словаря
-
-        # Пришлось делать костыиль, если делал
-        # from recipes.models import IngredientInRecipe
-        # кидало ошибку
-        # django.core.exceptions.ImproperlyConfigured: AUTH_USER_MODEL
-        # refers to model'users.User' that has not been installed
+        
         shopping_cart = recipes.models.IngredientInRecipe.objects.filter(
             recipe__purchases__user=self
         ).values(
@@ -133,7 +124,7 @@ class Follow(models.Model):
     Пользователь, который подписывается - user\n
     На кого подписывается - author
     """
-    # Пользователь, который подписывается
+    
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,

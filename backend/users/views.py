@@ -31,14 +31,14 @@ class UpdatePassword(APIView):
 
         try:
             serializer.is_valid(raise_exception=True)
-            # Проверка старого пароля
+            
             current_password = serializer.validated_data.get(
                 "current_password"
             )
             if not self.object.check_password(current_password):
                 return Response({"current_password": ["Неверный пароль!"]},
                                 status=status.HTTP_400_BAD_REQUEST)
-            # set_password хэширует пасс юзера!
+            
             self.object.set_password(
                 serializer.validated_data.get("new_password")
             )
@@ -56,7 +56,7 @@ class UserViewSet(mixins.ListModelMixin,
                   mixins.RetrieveModelMixin,
                   CreateUserMixin,
                   viewsets.GenericViewSet):
-    # Рскоментил!
+    
     lookup_field = "pk"
     lookup_url_kwarg = "id"
     permission_classes = (AllowAny,)
@@ -114,7 +114,7 @@ class SubscribeViewset(APIView):
             request.user
         )
 
-    # Проверка подписки юзера на автора
+    
     def _check_user_is_author(self, user, author):
         return user == author
 
@@ -178,7 +178,7 @@ class SubscribeViewset(APIView):
             )
         return False, None
 
-    # Подписаться
+    
     def post(self, request, author_id):
         author, user = self._get_author_and_user(request, author_id)
         is_following, message_is_following = (
@@ -207,7 +207,7 @@ class SubscribeViewset(APIView):
             status=status.HTTP_201_CREATED
         )
 
-    # Отписаться
+    
     def delete(self, request, author_id):
         author, user = self._get_author_and_user(request, author_id)
         is_not_following, message_is_not_following = (

@@ -33,11 +33,10 @@ class UsersListSerialiser(serializers.ModelSerializer):
             and hasattr(request, "user")
             and request.user.is_authenticated
         ):
-            # Вообще наверное это плохая реализация,
-            # каждый раз запрашиваем из БД
+           
             return request.user.follower.filter(author=obj).exists()
         else:
-            # Я хз что еще возвращать, если не авторизован
+            
             return False
 
 
@@ -75,9 +74,9 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
                 "Пользователь с таким email уже есть!"
             )
 
-    # Метод для сохранения нового пользователя
+    
     def save(self, *args, **kwargs):
-        # Проверяем на валидность пароль
+        
         password = self.validated_data["password"]
         return User.objects.create_user(
             email=self.validated_data["email"],
@@ -86,14 +85,4 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             last_name=self.validated_data["last_name"],
             password=password
         )
-        # Альтернатива, если без create_user
-        # Через создание объекта модели
-        # user = User(
-        #     email=self.validated_data["email"],
-        #     username=self.validated_data["username"],
-        #     first_name=self.validated_data["first_name"],
-        #     last_name=self.validated_data["last_name"],
-        # )
-        # # Сохраняем пароль
-        # user.set_password(password)
-        # user.save()
+        

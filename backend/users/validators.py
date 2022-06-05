@@ -4,9 +4,7 @@ from django.utils.deconstruct import deconstructible
 
 @deconstructible
 class UsernameValidator(validators.RegexValidator):
-    # В тз так, но тогда можно сделать username "Петрович"...
-    # Короче говоря, поддерживает еще и кириллицу
-    # regex = r"^[\w.@+-]+$"
+    
     regex = r"^[a-zA-Z0-9@+-]+$"
     message = (
         "Вы ввели невалидный username!\n"

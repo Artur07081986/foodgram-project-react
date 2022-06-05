@@ -19,7 +19,6 @@ class CreateUserMixin(CreateModelMixin):
             headers=headers
         )
 
-    # Пришлось сделать так, что бы как то получать экзмепляр модели,
-    # только что созданный
+    
     def perform_create(self, serializer):
         return serializer.save()

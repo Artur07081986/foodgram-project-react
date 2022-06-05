@@ -167,7 +167,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         serializer = RecipeListSerializer(instance)
         return serializer.data
 
-    # Вроде бы должно подтянуться из модели рецепта, но почему то нет...
+   
     def validate_cooking_time(self, value):
         if value < 1:
             raise serializers.ValidationError(
@@ -206,8 +206,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         return ingredients
 
     def validate_tags(self, tags):
-        # Т.к. теперь у нас PrimaryKeyRelatedField, проверка,
-        # что такой тэг есть не нужна
+        
         if len(tags) > len(set(tags)):
             raise serializers.ValidationError(
                 'Повторяющихся тегов в одном рецепе быть не должно!'
@@ -215,19 +214,16 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         return tags
 
     def _add_ingredients_in_recipe(self, recipe, ingredients):
-        # https://docs.djangoproject.com/en/4.0/ref/models/
-        # querysets/#bulk-create
+        
         temp_ingredients = list()
-        # bulk-create не делает нумерацию pk
+        
         obj_id = (
             IngredientInRecipe.objects.latest('id').id + 1
             if IngredientInRecipe.objects.all().exists()
             else 0
         )
         for ingredient in ingredients:
-            # Это я дебажил час... из за PrimaryKeyRelatedField у
-            # тегов - возвращался объект, хоть мы его и брали по 'id',
-            # а нам нужен был id
+            
             ingredient_id = ingredient.get('id').id
             amount = ingredient.get('amount')
 
@@ -243,13 +239,11 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
 
         IngredientInRecipe.objects.bulk_create(
             temp_ingredients,
-            # Это максимум для SqLite
+            
             batch_size=999
         )
 
-    # На случай, если захотим снять ограничение,
-    # на повторение ингредиентов и сделать их сложение,
-    # но тут уже без bulk_create
+   
     def _add_ingredients_in_recipe_no_restrictions_on_uniqueness(
         self, recipe, ingredients
     ):
@@ -261,32 +255,25 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
                 ingredient=ingredient_id
             ).exists():
                 amount += F('amount')
-            # https://stackoverflow.com/questions/16329946/
-            # django-model-method-create-or-update
+            
             IngredientInRecipe.objects.update_or_create(
                 recipe=recipe, ingredient=ingredient_id,
                 defaults={'amount': amount}
             )
 
     def create(self, validated_data):
-        # Попаю, что бы в самом конце созранить фотку, мало ли какие
-        # то ошибки будет, а фотка улетит уже в media, нам не нужны
-        # лишниее фотки...
+        
         image = validated_data.pop('image')
         ingredients = validated_data.pop('ingredients')
         tags = validated_data.pop('tags')
 
-        # Если проблемы с получением из validated_data:
-        # 8 пункт
-        # https://profil-software.com/blog/development/
-        # 10-things-you-need-know-effectively-use-django-rest-framework/#l3iqd
-        # self.initial_data.get('ingredients')
+        
 
         recipe = Recipe.objects.create(**validated_data)
         recipe.tags.set(tags)
         self._add_ingredients_in_recipe(recipe, ingredients)
         recipe.image = image
-        # Иначе фотка не сохранялась
+       
         recipe.save()
         return recipe
 
@@ -297,7 +284,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         IngredientInRecipe.objects.filter(recipe=instance).delete()
         self._add_ingredients_in_recipe(instance, ingredients)
 
-        # tags - many2many field, .set() устанавливает новые значения всегда
+        
         instance.tags.set(tags)
 
         return super().update(instance, validated_data)

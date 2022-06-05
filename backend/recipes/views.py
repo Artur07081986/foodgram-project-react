@@ -23,14 +23,12 @@ from .serializers import (FavoriteSerializer, IngredientSerializer,
                           PurchaseSerializer, RecipeCreateSerializer,
                           RecipeListSerializer, TagSerializer)
 
-# from reportlab.pdfbase import pdfmetrics
-# from reportlab.pdfbase.ttfonts import TTFont
-# from reportlab.pdfgen.canvas import Canvas
+
 
 
 User = get_user_model()
 
-# https://old.fonts-online.ru/font/Bee-Three - шрифт отсюда брал
+
 FONT_PATH = os.path.join(os.path.join(BASE_DIR, 'templates'), '19207.ttf')
 
 
@@ -46,16 +44,7 @@ class IngredientViewSet(mixins.ListModelMixin,
     ordering_fields = ('id',)
     lookup_url_kwarg = "id"
 
-    # Костыльный метод фильтрации)
-    # def get_queryset(self):
-    #     queryset = Ingredient.objects.all()
-    #     # Костыльно, но работает
-    #     # Хотел сделать через SearchFilter, но по тз
-    #     # нужно что бы name было квери параметром
-    #     keywords = self.request.query_params.get('name')
-    #     if keywords:
-    #         queryset = queryset.filter(name__startswith=keywords)
-    #     return queryset
+    
 
 
 @action(detail=True)
@@ -100,8 +89,7 @@ class RecipeViewSet(mixins.ListModelMixin,
             recipe_id=id
         )
 
-    # https://stackoverflow.com/questions/62084905/
-    # how-to-make-delete-method-in-django-extra-action
+    
     @favorite.mapping.delete
     def delete_favorite(self, request, id=None):
         return self.delete_recipe_from_model(
@@ -129,7 +117,7 @@ class RecipeViewSet(mixins.ListModelMixin,
             recipe_id=id
         )
 
-    # https://www.youtube.com/watch?v=_zkYICsIbXI&t=674s
+   
     @action(
         detail=False,
         methods=['GET'],
@@ -168,63 +156,7 @@ class RecipeViewSet(mixins.ListModelMixin,
         request.user._clean_up_shopping_cart()
         return response
 
-    # !!!!!!!!!!!!
-    # НЕ ИСПОЛЬЗУЕМ! OLD - через репорт либ
-    # !!!!!!!!!!!!
-    # from reportlab.pdfgen.canvas import Canvas
-    # @action(
-    #     detail=False,
-    #     methods=['GET'],
-    #     permission_classes=[IsAuthenticated]
-    # )
-    # def download_shopping_cart_old(self, request):
-    #     shopping_list = request.user._get_user_shopping_cart()
-
-    #     if shopping_list is None:
-    #         error = {'errors': 'Список рецептов пуст'}
-    #         return Response(error, status=status.HTTP_400_BAD_REQUEST)
-
-    #     recipes = [recipe for recipe in shopping_list['recipes_in_cart']]
-    #     purchases = shopping_list['purchases']
-    #     response = HttpResponse(
-    #         content_type='application/pdf'
-    #     )
-    #     response['Content-Disposition'] = (
-    #         'attachment; '
-    #         'filename="shopping_cart.pdf"'
-    #     )
-    #     canvas = Canvas(response)
-
-    #     pdfmetrics.registerFont(TTFont('FontPDF', FONT_PATH))
-    #     canvas.setFont('FontPDF', 50)
-    #     canvas.drawString(
-    #         100, 750,
-    #         "Список покупок, для рецептов:"
-    #     )
-    #     canvas.setFont('FontPDF', 30)
-    #     canvas.drawString(
-    #         100, 700,
-    #         f"{', '.join(recipes)}"
-    #     )
-    #     canvas.setFont('FontPDF', 30)
-    #     counter = itertools.count(650, -50)
-    #     for item in purchases:
-
-    #         height = next(counter)
-    #         canvas.drawString(
-    #             50, height,
-    #             f"-  {item['ingredient_name']} "
-    #             f"- {item['ingredient_amount']}"
-    #             f"{item['ingredient_measurement_unit']}"
-    #         )
-    #     canvas.save()
-
-    #     # request.user._clean_up_shopping_cart()
-    #     return response
-
-    # !!!!!!!!!!!!
-    # НЕ юзаем, вместо этого фильтрация в фильтрах
-    # !!!!!!!!!!!!
+    
     def _get_queryset_filtered_by_favorited_and_shopping_cart(self):
         user = self.request.user
 
@@ -239,19 +171,9 @@ class RecipeViewSet(mixins.ListModelMixin,
         ):
             return Recipe.objects.all()
 
-        # Тут мы анотируем объекты рецепров полями is_favorited и
-        # is_in_shopping_cart, в которых блягодаря Exists проставлены
-        # True or False, опираясь на то, был ли id рецепта в таблице
-        # Избранного / Покупок у user из реквеста
+        
         queryset = Recipe.objects.annotate(
-            # Что то новенькое...
-            # OuterRef -
-            # https://djangodoc.ru/3.2/ref/models/expressions/
-            # #referencing-columns-from-the-outer-queryset
-
-            # Exists -
-            # https://djangodoc.ru/3.2/ref/models/expressions/
-            # #exists-subqueries
+            
             is_favorited=Exists(Favorite.objects.filter(
                 user=user, recipe_id=OuterRef('pk')
             )),
@@ -270,7 +192,7 @@ class RecipeViewSet(mixins.ListModelMixin,
                 is_in_shopping_cart=True
             ).select_related('author').prefetch_related('tags', 'ingredients')
 
-        # Касаемо префетч не уверен
+        
         return queryset.select_related('author').prefetch_related(
             'tags', 'ingredients'
         )

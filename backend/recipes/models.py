@@ -109,7 +109,7 @@ class Recipe(models.Model):
         Ingredient,
         through='IngredientInRecipe'
     )
-    # Сортировать логичнее по дате публикации...
+    
     pub_date = models.DateTimeField(
         auto_now_add=True,
         verbose_name='Дата публикации',
@@ -123,8 +123,7 @@ class Recipe(models.Model):
     def __str__(self) -> str:
         return self.name
 
-    # Неожиданно для себя, понял что так работает)
-    # Удаляет старые изображения из файловой системы
+   
     def delete_image(self):
         self.image.delete()
 

@@ -16,9 +16,7 @@ class IngredientFilter(FilterSet):
         model = Ingredient
         fields = ["name"]
 
-    # **В качестве усложнения** можно сделать двойную фильтрацию:
-    #     - по вхождению в начало названия;
-    #     - по вхождению в произвольном месте.
+   
     @staticmethod
     def name_filter(queryset, name, value):
         return (
@@ -50,7 +48,7 @@ class RecipeFilter(FilterSet):
     author = filters.ModelChoiceFilter(
         queryset=User.objects.all()
     )
-    # Альтернативный вариант сортировки, вместо сортировки в кверисете
+    
     is_favorited = filters.BooleanFilter(method='filter_is_favorited')
     is_in_shopping_cart = filters.BooleanFilter(
         method='filter_is_in_shopping_cart'

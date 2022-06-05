@@ -8,9 +8,7 @@ class CustomUserManager(BaseUserManager):
         self, username, email, password,
         **extra_fields
     ):
-        # Если честно, не очень понимаю зачем тут эти проверки...
-        # Но они юзаются вот тут, например
-        # from django.contrib.auth.models import UserManager
+        
         if not email:
             raise ValueError("The given email must be set")
         email = self.normalize_email(email).lower()
