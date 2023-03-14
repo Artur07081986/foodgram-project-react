@@ -1,55 +1,41 @@
-from django.contrib import admin
+from django.contrib.admin import ModelAdmin, register
 
-from .models import (Favorite, Ingredient, IngredientInRecipe, Purchase,
-                     Recipe, Tag)
+from .models import Cart, Favorite, Ingredient, IngredientAmount, Recipe, Tag
 
 
-class IngredientAdmin(admin.ModelAdmin):
+@register(Tag)
+class TagAdmin(ModelAdmin):
+    list_display = ('name', 'slug', 'color')
+
+
+@register(Ingredient)
+class IngredientAdmin(ModelAdmin):
     list_display = ('name', 'measurement_unit')
-    search_fields = ('^name',)
+    list_filter = ('name',)
 
 
-class RecipeIngredientAdmin(admin.TabularInline):
-    model = IngredientInRecipe
-    fk_name = 'recipe'
-
-
-class RecipeAdmin(admin.ModelAdmin):
-    list_display = ('author', 'name', 'favorited')
+@register(Recipe)
+class RecipeAdmin(ModelAdmin):
+    list_display = ('name', 'author')
     list_filter = ('author', 'name', 'tags')
-    exclude = ('ingredients',)
-    search_fields = ('^name',)
+    readonly_fields = ('count_favorites',)
 
-    inlines = [
-        RecipeIngredientAdmin,
-    ]
+    def count_favorites(self, obj):
+        return obj.favorites.count()
 
-    @admin.display(empty_value='Никто')
-    def favorited(self, obj):
-        return Favorite.objects.filter(recipe=obj).count()
-
-    favorited.short_description = 'Кол-во людей добавивших в избранное'
+    count_favorites.short_description = 'Число добавлений в избранное'
 
 
-class TagAdmin(admin.ModelAdmin):
-    list_display = ('name', 'color', 'slug')
+@register(IngredientAmount)
+class IngredientAmountAdmin(ModelAdmin):
+    pass
 
 
-class RecipeIngredientAdmin(admin.ModelAdmin):
-    list_display = ('recipe', 'ingredient', 'amount')
+@register(Favorite)
+class FavoriteAdmin(ModelAdmin):
+    pass
 
 
-class PurchaseAdmin(admin.ModelAdmin):
-    list_display = ('user', 'recipe')
-
-
-class FavoriteAdmin(admin.ModelAdmin):
-    list_display = ('user', 'recipe')
-
-
-admin.site.register(Ingredient, IngredientAdmin)
-admin.site.register(Tag, TagAdmin)
-admin.site.register(Recipe, RecipeAdmin)
-admin.site.register(IngredientInRecipe, RecipeIngredientAdmin)
-admin.site.register(Purchase, PurchaseAdmin)
-admin.site.register(Favorite, FavoriteAdmin)
+@register(Cart)
+class CartAdmin(ModelAdmin):
+    pass

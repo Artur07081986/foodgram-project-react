@@ -1,151 +1,30 @@
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth import get_user_model
 from django.db import models
-from django.db.models import F, Sum
 
-import recipes as recipes
-from foodgram.settings import GLOBAL_SETTINGS
-
-from .managers import CustomUserManager
-from .validators import (NotDeletedUsernameValidator, NotMeUsernameValidator,
-                         UsernameValidator)
-
-
-
-class User(AbstractUser):
-
-    username = models.CharField(
-        "Username",
-        max_length=150,
-        unique=True,
-        help_text=(
-            "Введите username, под которым будете, в дальнейшем, заходить "
-            "на наш проект. Username может состоять из символов латинского "
-            "алфавита [a-z A-Z], цифр [0-9] и спецсимволов: [ @ + - ]"
-        ),
-        validators=[
-            
-            NotMeUsernameValidator(),
-            UsernameValidator(),
-            NotDeletedUsernameValidator()
-        ],
-        error_messages={
-            "unique": (
-                "Пользователь с таким username уже есть, включите фантазию и "
-                "придумайте другой username."
-            ),
-        },
-    )
-    email = models.EmailField(
-        "Электронная почта",
-        unique=True,
-        max_length=254,
-        error_messages={
-            "unique": "Пользователь с таким email уже создан",
-        }
-    )
-
-    first_name = models.CharField(
-        "Имя",
-        max_length=50,
-    )
-    last_name = models.CharField(
-        "Фамилия",
-        max_length=50,
-    )
-    role = models.CharField(
-        "Роль - права доступа",
-        max_length=10,
-        choices=GLOBAL_SETTINGS["ROLE"],
-        default=GLOBAL_SETTINGS["user"]
-    )
-    objects = CustomUserManager()
-
-    class Meta:
-        ordering = ["id"]
-        verbose_name_plural = "Пользователи"
-        verbose_name = "Пользователь"
-
-    @property
-    def _is_admin(self):
-        return self.role == GLOBAL_SETTINGS["admin"] or self.is_superuser
-
-    def _is_following(self, obj):
-        return Follow.objects.filter(
-            user=self,
-            author=obj
-        ).exists()
-
-    def _follow(self, obj):
-        Follow.objects.get_or_create(
-            user=self,
-            author=obj
-        )
-
-    def _unfollow(self, obj):
-        Follow.objects.filter(
-            user=self,
-            author=obj
-        ).delete()
-
-    def _clean_up_shopping_cart(self):
-        self.purchases.all().delete()
-
-    def _get_user_shopping_cart(self):
-
-        purchases = self.purchases
-        if not purchases.exists():
-            return None
-        user_recipes_for_shopping = [
-            purchase.recipe.name for purchase in purchases.all()
-        ]
-
-        
-        shopping_cart = recipes.models.IngredientInRecipe.objects.filter(
-            recipe__purchases__user=self
-        ).values(
-            ingredient_name=F('ingredient__name'),
-            ingredient_measurement_unit=F('ingredient__measurement_unit'),
-        ).annotate(
-            ingredient_amount=Sum('amount'),
-        ).order_by('ingredient_name')
-
-        return {
-            'recipes_in_cart': user_recipes_for_shopping,
-            'purchases': shopping_cart
-        }
-
-    def __str__(self) -> str:
-        return self.username
+User = get_user_model()
 
 
 class Follow(models.Model):
-    """
-    Модель подписок\n
-    Пользователь, который подписывается - user\n
-    На кого подписывается - author
-    """
-    
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        verbose_name="Пользователь - кто подписан",
-        related_name="follower"
+        related_name='follower',
+        verbose_name='Подписчик',
     )
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        verbose_name="Пользователь - на кого подписан",
-        related_name="following"
+        related_name='following',
+        verbose_name='Автор',
     )
 
     class Meta:
-        verbose_name_plural = "Подписки"
+        ordering = ['-id']
+        verbose_name = 'Подписка'
+        verbose_name_plural = 'Подписки'
         constraints = [
             models.UniqueConstraint(
-                fields=["author", "user"],
-                name="Follow_unique"
-            ),
+                fields=['user', 'author'],
+                name='unique_follow',
+            )
         ]
-
-    def __str__(self):
-        return f"{self.user} follows {self.author}"
