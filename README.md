@@ -18,8 +18,8 @@
 добавлять понравившиеся рецепты в список «Избранное», а перед походом в магазин скачивать сводный список продуктов, 
 необходимых для приготовления одного или нескольких выбранных блюд.
 
-#### Сайт доступен по адресу: http://food-gram.ddns.net/
-#### Админка: http://food-gram.ddns.net/admin/
+#### Сайт доступен по адресу: http://foodhelper.ddns.net/
+#### Админка: http://foodhelper.ddns.net/admin/
 
 
 ## Пользовательские роли
@@ -86,11 +86,7 @@ DB_PORT=5432
 ALLOWED_HOSTS='*'
 ```
 
-- в Docker cоздаем образ :
 
-```
-docker build -t foodgram .
-```
 - Собираем контейнеры:
 ```
 docker-compose up -d
@@ -107,7 +103,7 @@ docker-compose exec backend python manage.py migrate
 docker-compose exec backend python manage.py createsuperuser
 docker-compose exec backend python manage.py collectstatic --no-input 
 docker-compose exec backend python manage.py shell 
->>> exec(open("/app/data/filldb.py").read())
+>>> exec(open("static/data/filldb.py").read())
 >>> quit()
 ```
 
