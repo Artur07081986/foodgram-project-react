@@ -14,7 +14,7 @@ services:
       - .env
 
   backend:
-    image: 7ewm5xfw/foodgram_backend:v09.03.2023
+    image: 7ewm5xfw/foodgram_backend:v16.03.2023
     restart: always
     volumes:
       - static_value:/app/static/
