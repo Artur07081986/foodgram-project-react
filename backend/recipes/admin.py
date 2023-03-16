@@ -12,6 +12,7 @@ class TagAdmin(ModelAdmin):
 class IngredientAdmin(ModelAdmin):
     list_display = ('name', 'measurement_unit')
     list_filter = ('name',)
+    search_fields = ('name',)
 
 
 @register(Recipe)
@@ -19,6 +20,7 @@ class RecipeAdmin(ModelAdmin):
     list_display = ('name', 'author')
     list_filter = ('author', 'name', 'tags')
     readonly_fields = ('count_favorites',)
+    search_fields = ('name',)
 
     def count_favorites(self, obj):
         return obj.favorites.count()
@@ -28,14 +30,18 @@ class RecipeAdmin(ModelAdmin):
 
 @register(IngredientAmount)
 class IngredientAmountAdmin(ModelAdmin):
-    pass
+    list_display = ('recipe',)
+    search_fields = ('recipe',)
 
 
 @register(Favorite)
 class FavoriteAdmin(ModelAdmin):
-    pass
+    list_display = ('recipe', 'user')
+    search_fields = ('recipe', 'user') 
 
 
 @register(Cart)
 class CartAdmin(ModelAdmin):
-    pass
+    list_display = ('recipe',)
+    search_fields = ('recipe',)
+    

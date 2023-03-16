@@ -29,8 +29,8 @@ class Ingredient(models.Model):
         verbose_name='Единицы измерения', max_length=20)
 
     class Meta:
-        verbose_name = 'Ингридиент'
-        verbose_name_plural = 'Ингридиенты'
+        verbose_name = 'Ингредиент'
+        verbose_name_plural = 'Ингредиенты'
         ordering = ['name']
         constraints = [
             models.UniqueConstraint(fields=['name', 'measurement_unit'],
@@ -97,14 +97,14 @@ class IngredientAmount(models.Model):
         default=1,
         validators=(
             validators.MinValueValidator(
-                1, message='Минимальное количество ингридиентов 1'),),
+                1, message='Минимальное количество ингредиентов 1'),),
         verbose_name='Количество',
     )
 
     class Meta:
         ordering = ['-id']
-        verbose_name = 'Количество ингридиента'
-        verbose_name_plural = 'Количество ингридиентов'
+        verbose_name = 'Количество ингредиента'
+        verbose_name_plural = 'Количество ингредиентов'
         constraints = [
             models.UniqueConstraint(fields=['recipe', 'ingredients'],
                                     name='unique_ingredients_recipe')

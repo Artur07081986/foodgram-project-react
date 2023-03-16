@@ -9,11 +9,12 @@ from .models import Follow
 class CustomUserAdmin(UserAdmin):
     list_display = ['email', 'username', ]
     list_filter = ['email', 'username', ]
-
+    
 
 @register(Follow)
 class FollowAdmin(admin.ModelAdmin):
     autocomplete_fields = ('author', 'user')
+    search_fields = ('user',)
 
 
 admin.site.unregister(User)
