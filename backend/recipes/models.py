@@ -101,6 +101,7 @@ class IngredientAmount(models.Model):
         verbose_name='Количество',
     )
 
+
     class Meta:
         ordering = ['-id']
         verbose_name = 'Количество ингредиента'
@@ -127,6 +128,7 @@ class Cart(models.Model):
         related_name='cart',
         verbose_name='Рецепт',
     )
+    
 
     class Meta:
         ordering = ['-id']
